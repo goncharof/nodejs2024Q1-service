@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 // import { CreateFavoriteDto } from './dto/create-favorite.dto';
 // import { UpdateFavoriteDto } from './dto/update-favorite.dto';
 import { Favorite } from './entities/favorite.entity';
+import { UUID } from 'node:crypto';
 
 @Injectable()
 export class FavoritesService {
@@ -10,23 +11,39 @@ export class FavoritesService {
     albums: [],
     tracks: [],
   };
-  // create(createFavoriteDto: CreateFavoriteDto) {
-  // return 'This action adds a new favorite';
-  // }
 
-  // findAll() {
-  //   return `This action returns all favorites`;
-  // }
+  addTrackToFavorites(trackId: UUID) {
+    this.favorite.tracks.push(trackId);
+  }
 
-  // findOne(id: number) {
-  //   return `This action returns a #${id} favorite`;
-  // }
+  addAlbumToFavorites(albumId: UUID) {
+    this.favorite.albums.push(albumId);
+  }
 
-  // update(id: number, updateFavoriteDto: UpdateFavoriteDto) {
-  //   return `This action updates a #${id} favorite`;
-  // }
+  addArtistToFavorites(artistId: UUID) {
+    this.favorite.artists.push(artistId);
+  }
 
-  // remove(id: number) {
-  //   return `This action removes a #${id} favorite`;
-  // }
+  removeTrackFromFavorites(trackId: UUID) {
+    this.favorite.tracks = this.favorite.tracks.filter(
+      (track) => track !== trackId,
+    );
+  }
+
+  removeAlbumFromFavorites(albumId: UUID) {
+    this.favorite.albums = this.favorite.albums.filter(
+      (album) => album !== albumId,
+    );
+  }
+
+  removeArtistFromFavorites(artistId: UUID) {
+    this.favorite.artists = this.favorite.artists.filter(
+      (artist) => artist !== artistId,
+    );
+  }
+
+  findAll() {
+    return this.favorite;
+    //   return `This action returns all favorites`;
+  }
 }
