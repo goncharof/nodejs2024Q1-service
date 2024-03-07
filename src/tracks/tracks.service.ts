@@ -1,26 +1,42 @@
 import { Injectable } from '@nestjs/common';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
+import { Track } from './entities/track.entity';
+import { UUID, randomUUID } from 'crypto';
 
 @Injectable()
 export class TracksService {
+  private readonly tracks: Track[] = [];
+
   create(createTrackDto: CreateTrackDto) {
-    return 'This action adds a new track';
+    const track: Track = {
+      id: randomUUID(),
+      ...createTrackDto,
+    };
+    this.tracks.push(track);
+    return track;
   }
 
   findAll() {
-    return `This action returns all tracks`;
+    return this.tracks;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} track`;
+  findOne(id: UUID) {
+    return this.tracks.find((track) => track.id === id);
   }
 
-  update(id: number, updateTrackDto: UpdateTrackDto) {
-    return `This action updates a #${id} track`;
+  update(id: UUID, updateTrackDto: UpdateTrackDto) {
+    let track = this.findOne(id);
+    if (track) {
+      track = { ...track, ...updateTrackDto };
+    }
+    return track;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} track`;
+  remove(id: UUID) {
+    const index = this.tracks.findIndex((track) => track.id === id);
+    if (index !== -1) {
+      this.tracks.splice(index, 1);
+    }
   }
 }
