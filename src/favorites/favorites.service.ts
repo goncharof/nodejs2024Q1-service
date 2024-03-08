@@ -1,49 +1,50 @@
 import { Injectable } from '@nestjs/common';
 // import { CreateFavoriteDto } from './dto/create-favorite.dto';
 // import { UpdateFavoriteDto } from './dto/update-favorite.dto';
-import { Favorite } from './entities/favorite.entity';
 import { UUID } from 'node:crypto';
+import { DbService, RecordType } from 'src/db/db.service';
 
 @Injectable()
 export class FavoritesService {
-  private readonly favorite: Favorite = {
-    artists: [],
-    albums: [],
-    tracks: [],
-  };
+  constructor(private db: DbService) {}
 
   addTrackToFavorites(trackId: UUID) {
-    this.favorite.tracks.push(trackId);
+    this.db[RecordType.FAVORITE].tracks.push(trackId);
   }
 
   addAlbumToFavorites(albumId: UUID) {
-    this.favorite.albums.push(albumId);
+    this.db[RecordType.FAVORITE].albums.push(albumId);
   }
 
   addArtistToFavorites(artistId: UUID) {
-    this.favorite.artists.push(artistId);
+    this.db[RecordType.FAVORITE].artists.push(artistId);
   }
 
   removeTrackFromFavorites(trackId: UUID) {
-    this.favorite.tracks = this.favorite.tracks.filter(
-      (track) => track !== trackId,
-    );
+    this.db[RecordType.FAVORITE].tracks = this.db[
+      RecordType.FAVORITE
+    ].tracks.filter((track) => track !== trackId);
   }
 
   removeAlbumFromFavorites(albumId: UUID) {
-    this.favorite.albums = this.favorite.albums.filter(
-      (album) => album !== albumId,
-    );
+    this.db[RecordType.FAVORITE].albums = this.db[
+      RecordType.FAVORITE
+    ].albums.filter((album) => album !== albumId);
   }
 
   removeArtistFromFavorites(artistId: UUID) {
-    this.favorite.artists = this.favorite.artists.filter(
-      (artist) => artist !== artistId,
-    );
+    this.db[RecordType.FAVORITE].artists = this.db[
+      RecordType.FAVORITE
+    ].artists.filter((artist) => artist !== artistId);
   }
 
   findAll() {
-    return this.favorite;
-    //   return `This action returns all favorites`;
+    const { artists, albums, tracks } = this.db[RecordType.FAVORITE];
+
+    return {
+      artists: artists.map((id) => this.db.getById(RecordType.ARTIST, id)),
+      albums: albums.map((id) => this.db.getById(RecordType.ALBUM, id)),
+      tracks: tracks.map((id) => this.db.getById(RecordType.TRACK, id)),
+    };
   }
 }

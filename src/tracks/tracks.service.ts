@@ -3,26 +3,27 @@ import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
 import { Track } from './entities/track.entity';
 import { UUID, randomUUID } from 'crypto';
+import { DbService, RecordType } from 'src/db/db.service';
 
 @Injectable()
 export class TracksService {
-  private readonly tracks: Track[] = [];
+  constructor(private db: DbService) {}
 
   create(createTrackDto: CreateTrackDto) {
     const track: Track = {
       id: randomUUID(),
       ...createTrackDto,
     };
-    this.tracks.push(track);
+    this.db[RecordType.TRACK].push(track);
     return track;
   }
 
   findAll() {
-    return this.tracks;
+    return this.db[RecordType.TRACK];
   }
 
   findOne(id: UUID) {
-    return this.tracks.find((track) => track.id === id);
+    return this.db[RecordType.TRACK].find((track) => track.id === id);
   }
 
   update(id: UUID, updateTrackDto: UpdateTrackDto) {
@@ -34,9 +35,11 @@ export class TracksService {
   }
 
   remove(id: UUID) {
-    const index = this.tracks.findIndex((track) => track.id === id);
+    const index = this.db[RecordType.TRACK].findIndex(
+      (track) => track.id === id,
+    );
     if (index !== -1) {
-      this.tracks.splice(index, 1);
+      this.db[RecordType.TRACK].splice(index, 1);
     }
   }
 }

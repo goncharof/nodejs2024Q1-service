@@ -3,26 +3,27 @@ import { CreateAlbumDto } from './dto/create-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
 import { Album } from './entities/album.entity';
 import { UUID, randomUUID } from 'crypto';
+import { DbService, RecordType } from 'src/db/db.service';
 
 @Injectable()
 export class AlbumsService {
-  private readonly albums: Album[] = [];
+  constructor(private db: DbService) {}
 
   create(createAlbumDto: CreateAlbumDto) {
     const album: Album = {
       id: randomUUID(),
       ...createAlbumDto,
     };
-    this.albums.push(album);
+    this.db[RecordType.ALBUM].push(album);
     return album;
   }
 
   findAll() {
-    return this.albums;
+    return this.db[RecordType.ALBUM];
   }
 
   findOne(id: UUID) {
-    return this.albums.find((album) => album.id === id);
+    return this.db[RecordType.ALBUM].find((album) => album.id === id);
   }
 
   update(id: UUID, updateAlbumDto: UpdateAlbumDto) {
@@ -34,9 +35,11 @@ export class AlbumsService {
   }
 
   remove(id: UUID) {
-    const index = this.albums.findIndex((album) => album.id === id);
+    const index = this.db[RecordType.ALBUM].findIndex(
+      (album) => album.id === id,
+    );
     if (index !== -1) {
-      this.albums.splice(index, 1);
+      this.db[RecordType.ALBUM].splice(index, 1);
     }
   }
 }

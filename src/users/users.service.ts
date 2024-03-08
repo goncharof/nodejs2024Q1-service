@@ -3,10 +3,11 @@ import { UUID, randomUUID } from 'crypto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
+import { DbService, RecordType } from 'src/db/db.service';
 
 @Injectable()
 export class UsersService {
-  private readonly users: User[] = [];
+  constructor(private db: DbService) {}
 
   create(createUserDto: CreateUserDto) {
     const user: User = {
@@ -16,16 +17,16 @@ export class UsersService {
       createdAt: Date.now(),
       updatedAt: Date.now(),
     };
-    this.users.push(user);
+    this.db[RecordType.USER].push(user);
     return user;
   }
 
   findAll(): User[] {
-    return this.users;
+    return this.db[RecordType.USER];
   }
 
   findOne(id: UUID) {
-    return this.users.find((user) => user.id === id);
+    return this.db[RecordType.USER].find((user) => user.id === id);
   }
 
   update(id: UUID, updateUserDto: UpdateUserDto) {
@@ -41,7 +42,10 @@ export class UsersService {
   remove(id: UUID) {
     const user = this.findOne(id);
     if (user) {
-      this.users.splice(this.users.indexOf(user), 1);
+      this.db[RecordType.USER].splice(
+        this.db[RecordType.USER].indexOf(user),
+        1,
+      );
     }
   }
 }
