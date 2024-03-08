@@ -9,15 +9,18 @@ export class FavoritesService {
   constructor(private db: DbService) {}
 
   addTrackToFavorites(trackId: UUID) {
-    this.db[RecordType.FAVORITE].tracks.push(trackId);
+    if (this.db.getById(RecordType.TRACK, trackId))
+      this.db[RecordType.FAVORITE].tracks.push(trackId);
   }
 
   addAlbumToFavorites(albumId: UUID) {
-    this.db[RecordType.FAVORITE].albums.push(albumId);
+    if (this.db.getById(RecordType.ALBUM, albumId))
+      this.db[RecordType.FAVORITE].albums.push(albumId);
   }
 
   addArtistToFavorites(artistId: UUID) {
-    this.db[RecordType.FAVORITE].artists.push(artistId);
+    if (this.db.getById(RecordType.ARTIST, artistId))
+      this.db[RecordType.FAVORITE].artists.push(artistId);
   }
 
   removeTrackFromFavorites(trackId: UUID) {
