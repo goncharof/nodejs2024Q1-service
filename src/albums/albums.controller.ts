@@ -9,6 +9,7 @@ import {
   HttpCode,
   HttpStatus,
   ParseUUIDPipe,
+  HttpException,
 } from '@nestjs/common';
 import { AlbumsService } from './albums.service';
 import { CreateAlbumDto } from './dto/create-album.dto';
@@ -45,6 +46,10 @@ export class AlbumsController {
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   remove(@Param('id', new ParseUUIDPipe({ version: '4' })) id: UUID) {
-    return this.albumsService.remove(id);
+    console.log(this.albumsService.remove(id));
+
+    if (!this.albumsService.remove(id)) {
+      throw new HttpException('Album not found', HttpStatus.NOT_FOUND);
+    }
   }
 }

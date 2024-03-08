@@ -44,6 +44,10 @@ export class AlbumsService {
       this.db[RecordType.FAVORITE].albums = this.db[
         RecordType.FAVORITE
       ].albums.filter((album) => album !== id);
+
+      return true;
     }
+
+    return false;
   }
 }

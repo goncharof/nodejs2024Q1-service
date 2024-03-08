@@ -44,6 +44,10 @@ export class TracksService {
       this.db[RecordType.FAVORITE].tracks = this.db[
         RecordType.FAVORITE
       ].tracks.filter((track) => track !== id);
+
+      return true;
     }
+
+    return false;
   }
 }

@@ -44,6 +44,10 @@ export class ArtistsService {
       this.db[RecordType.FAVORITE].artists = this.db[
         RecordType.FAVORITE
       ].artists.filter((artist) => artist !== id);
+
+      return true;
     }
+
+    return false;
   }
 }
