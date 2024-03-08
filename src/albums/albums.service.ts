@@ -40,6 +40,10 @@ export class AlbumsService {
     );
     if (index !== -1) {
       this.db[RecordType.ALBUM].splice(index, 1);
+
+      this.db[RecordType.FAVORITE].albums = this.db[
+        RecordType.FAVORITE
+      ].albums.filter((album) => album !== id);
     }
   }
 }

@@ -40,6 +40,10 @@ export class ArtistsService {
     );
     if (index !== -1) {
       this.db[RecordType.ARTIST].splice(index, 1);
+
+      this.db[RecordType.FAVORITE].artists = this.db[
+        RecordType.FAVORITE
+      ].artists.filter((artist) => artist !== id);
     }
   }
 }

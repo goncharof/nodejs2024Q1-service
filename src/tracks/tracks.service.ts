@@ -40,6 +40,10 @@ export class TracksService {
     );
     if (index !== -1) {
       this.db[RecordType.TRACK].splice(index, 1);
+
+      this.db[RecordType.FAVORITE].tracks = this.db[
+        RecordType.FAVORITE
+      ].tracks.filter((track) => track !== id);
     }
   }
 }
