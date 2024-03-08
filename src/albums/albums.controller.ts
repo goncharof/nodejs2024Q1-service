@@ -8,6 +8,7 @@ import {
   Delete,
   HttpCode,
   HttpStatus,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import { AlbumsService } from './albums.service';
 import { CreateAlbumDto } from './dto/create-album.dto';
@@ -29,18 +30,21 @@ export class AlbumsController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: UUID) {
+  findOne(@Param('id', new ParseUUIDPipe({ version: '4' })) id: UUID) {
     return this.albumsService.findOne(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: UUID, @Body() updateAlbumDto: UpdateAlbumDto) {
+  update(
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: UUID,
+    @Body() updateAlbumDto: UpdateAlbumDto,
+  ) {
     return this.albumsService.update(id, updateAlbumDto);
   }
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  remove(@Param('id') id: UUID) {
+  remove(@Param('id', new ParseUUIDPipe({ version: '4' })) id: UUID) {
     return this.albumsService.remove(id);
   }
 }

@@ -8,6 +8,7 @@ import {
   Delete,
   HttpCode,
   HttpStatus,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import { TracksService } from './tracks.service';
 import { CreateTrackDto } from './dto/create-track.dto';
@@ -29,18 +30,21 @@ export class TracksController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: UUID) {
+  findOne(@Param('id', new ParseUUIDPipe({ version: '4' })) id: UUID) {
     return this.tracksService.findOne(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: UUID, @Body() updateTrackDto: UpdateTrackDto) {
+  update(
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: UUID,
+    @Body() updateTrackDto: UpdateTrackDto,
+  ) {
     return this.tracksService.update(id, updateTrackDto);
   }
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  remove(@Param('id') id: UUID) {
+  remove(@Param('id', new ParseUUIDPipe({ version: '4' })) id: UUID) {
     return this.tracksService.remove(id);
   }
 }
