@@ -9,18 +9,27 @@ export class FavoritesService {
   constructor(private db: DbService) {}
 
   addTrackToFavorites(trackId: UUID) {
-    if (this.db.getById(RecordType.TRACK, trackId))
+    if (this.db.getById(RecordType.TRACK, trackId)) {
       this.db[RecordType.FAVORITE].tracks.push(trackId);
+      return true;
+    }
+    return false;
   }
 
   addAlbumToFavorites(albumId: UUID) {
-    if (this.db.getById(RecordType.ALBUM, albumId))
+    if (this.db.getById(RecordType.ALBUM, albumId)) {
       this.db[RecordType.FAVORITE].albums.push(albumId);
+      return true;
+    }
+    return false;
   }
 
   addArtistToFavorites(artistId: UUID) {
-    if (this.db.getById(RecordType.ARTIST, artistId))
+    if (this.db.getById(RecordType.ARTIST, artistId)) {
       this.db[RecordType.FAVORITE].artists.push(artistId);
+      return true;
+    }
+    return false;
   }
 
   removeTrackFromFavorites(trackId: UUID) {

@@ -7,6 +7,7 @@ import {
   HttpCode,
   HttpStatus,
   ParseUUIDPipe,
+  HttpException,
 } from '@nestjs/common';
 import { FavoritesService } from './favorites.service';
 import { UUID } from 'crypto';
@@ -24,21 +25,36 @@ export class FavoritesController {
   async addTrackToFavorites(
     @Param('id', new ParseUUIDPipe({ version: '4' })) trackId: UUID,
   ) {
-    return this.favoritesService.addTrackToFavorites(trackId);
+    if (!this.favoritesService.addTrackToFavorites(trackId)) {
+      throw new HttpException(
+        'Track not found',
+        HttpStatus.UNPROCESSABLE_ENTITY,
+      );
+    }
   }
 
   @Post('album/:id')
   async addAlbumToFavorites(
     @Param('id', new ParseUUIDPipe({ version: '4' })) albumId: UUID,
   ) {
-    return this.favoritesService.addAlbumToFavorites(albumId);
+    if (!this.favoritesService.addAlbumToFavorites(albumId)) {
+      throw new HttpException(
+        'Album not found',
+        HttpStatus.UNPROCESSABLE_ENTITY,
+      );
+    }
   }
 
   @Post('artist/:id')
   async addArtistToFavorites(
     @Param('id', new ParseUUIDPipe({ version: '4' })) artistId: UUID,
   ) {
-    return this.favoritesService.addArtistToFavorites(artistId);
+    if (!this.favoritesService.addArtistToFavorites(artistId)) {
+      throw new HttpException(
+        'Artist not found',
+        HttpStatus.UNPROCESSABLE_ENTITY,
+      );
+    }
   }
 
   @Get()
