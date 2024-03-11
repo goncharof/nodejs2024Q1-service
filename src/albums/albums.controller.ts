@@ -46,8 +46,6 @@ export class AlbumsController {
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   remove(@Param('id', new ParseUUIDPipe({ version: '4' })) id: UUID) {
-    console.log(this.albumsService.remove(id));
-
     if (!this.albumsService.remove(id)) {
       throw new HttpException('Album not found', HttpStatus.NOT_FOUND);
     }
