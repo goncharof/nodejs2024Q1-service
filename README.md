@@ -17,6 +17,12 @@ git clone --branch develop https://github.com/goncharof/nodejs2024Q1-service
 npm install
 ```
 
+## App configuration
+
+```
+Create .env file (based on .env.example): ./.env
+```
+
 ## Running application
 
 ```
