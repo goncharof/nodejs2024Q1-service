@@ -30,8 +30,10 @@ export class TracksService {
     let track = this.findOne(id);
     if (track) {
       track = { ...track, ...updateTrackDto };
+      return track;
     }
-    return track;
+
+    return undefined;
   }
 
   remove(id: UUID) {
