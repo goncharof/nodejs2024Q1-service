@@ -29,14 +29,12 @@ export class ArtistsService {
   update(id: UUID, updateArtistDto: UpdateArtistDto) {
     let artist = this.findOne(id);
 
-    console.log(this.findAll(), id);
-
     if (artist) {
       artist = { ...artist, ...updateArtistDto };
       return artist;
-    } else {
-      return undefined;
     }
+
+    return undefined;
   }
 
   remove(id: UUID) {
