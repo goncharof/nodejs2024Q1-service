@@ -8,7 +8,7 @@
 ## Downloading
 
 ```
-git clone {repository URL}
+git clone --branch develop https://github.com/goncharof/nodejs2024Q1-service
 ```
 
 ## Installing NPM modules
