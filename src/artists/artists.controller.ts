@@ -10,6 +10,7 @@ import {
   HttpStatus,
   ParseUUIDPipe,
   HttpException,
+  Put,
 } from '@nestjs/common';
 import { ArtistsService } from './artists.service';
 import { CreateArtistDto } from './dto/create-artist.dto';
@@ -32,15 +33,25 @@ export class ArtistsController {
 
   @Get(':id')
   findOne(@Param('id', new ParseUUIDPipe({ version: '4' })) id: UUID) {
-    return this.artistsService.findOne(id);
+    const artist = this.artistsService.findOne(id);
+    if (!artist) {
+      throw new HttpException('Artist not found', HttpStatus.NOT_FOUND);
+    }
+    return artist;
   }
 
+  @Put(':id')
   @Patch(':id')
   update(
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: UUID,
     @Body() updateArtistDto: UpdateArtistDto,
   ) {
-    return this.artistsService.update(id, updateArtistDto);
+    const artist = this.artistsService.update(id, updateArtistDto);
+    if (!artist) {
+      throw new HttpException('Artist not found', HttpStatus.NOT_FOUND);
+    }
+
+    return artist;
   }
 
   @Delete(':id')

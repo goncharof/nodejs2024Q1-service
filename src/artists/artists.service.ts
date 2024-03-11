@@ -28,10 +28,15 @@ export class ArtistsService {
 
   update(id: UUID, updateArtistDto: UpdateArtistDto) {
     let artist = this.findOne(id);
+
+    console.log(this.findAll(), id);
+
     if (artist) {
       artist = { ...artist, ...updateArtistDto };
+      return artist;
+    } else {
+      return undefined;
     }
-    return artist;
   }
 
   remove(id: UUID) {
@@ -44,6 +49,18 @@ export class ArtistsService {
       this.db[RecordType.FAVORITE].artists = this.db[
         RecordType.FAVORITE
       ].artists.filter((artist) => artist !== id);
+
+      this.db[RecordType.ALBUM].forEach((album) => {
+        if (album.artistId === id) {
+          album.artistId = null;
+        }
+      });
+
+      this.db[RecordType.TRACK].forEach((album) => {
+        if (album.artistId === id) {
+          album.artistId = null;
+        }
+      });
 
       return true;
     }
