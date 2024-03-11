@@ -30,8 +30,10 @@ export class AlbumsService {
     let album = this.findOne(id);
     if (album) {
       album = { ...album, ...updateAlbumDto };
+      return album;
     }
-    return album;
+
+    return undefined;
   }
 
   remove(id: UUID) {
@@ -44,6 +46,12 @@ export class AlbumsService {
       this.db[RecordType.FAVORITE].albums = this.db[
         RecordType.FAVORITE
       ].albums.filter((album) => album !== id);
+
+      this.db[RecordType.TRACK].forEach((track) => {
+        if (track.albumId === id) {
+          track.albumId = null;
+        }
+      });
 
       return true;
     }
