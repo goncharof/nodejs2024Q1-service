@@ -3,30 +3,27 @@ import { UUID } from 'crypto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
-import { DbService, RecordType } from 'src/db/db.service';
 import { StatusCodes } from 'http-status-codes';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class UsersService {
-  constructor(private db: DbService) {}
+  constructor(private prisma: PrismaService) {}
 
-  create(createUserDto: CreateUserDto): User {
-    const user = new User(createUserDto);
-    this.db[RecordType.USER].push(user);
-
-    return user;
+  async create(createUserDto: CreateUserDto): Promise<User> {
+    return await this.prisma.user.create({ data: createUserDto });
   }
 
-  findAll(): User[] {
-    return this.db[RecordType.USER];
+  async findAll(): Promise<User[]> {
+    return this.prisma.user.findMany();
   }
 
-  findOne(id: UUID) {
-    return this.db[RecordType.USER].find((user) => user.id === id);
+  async findOne(id: UUID): Promise<User> {
+    return await this.prisma.user.findUnique({ where: { id } });
   }
 
-  update(id: UUID, updateUserDto: UpdateUserDto) {
-    const user = this.findOne(id);
+  async update(id: UUID, updateUserDto: UpdateUserDto) {
+    const user = await this.findOne(id);
     if (user) {
       if (updateUserDto.oldPassword !== user.password) {
         return {
@@ -35,13 +32,17 @@ export class UsersService {
         };
       }
 
-      user.password = updateUserDto.newPassword;
-      user.version += 1;
-      user.updatedAt = Date.now();
+      const updatedUser = await this.prisma.user.update({
+        where: { id },
+        data: {
+          password: updateUserDto.newPassword,
+          version: user.version + 1,
+        },
+      });
 
       return {
         status: StatusCodes.OK,
-        user,
+        user: updatedUser,
       };
     }
     return {
@@ -50,17 +51,12 @@ export class UsersService {
     };
   }
 
-  remove(id: UUID) {
-    const user = this.findOne(id);
-    if (user) {
-      this.db[RecordType.USER].splice(
-        this.db[RecordType.USER].indexOf(user),
-        1,
-      );
-
+  async remove(id: UUID) {
+    try {
+      await this.prisma.user.delete({ where: { id } });
       return true;
+    } catch (error) {
+      return false;
     }
-
-    return false;
   }
 }
