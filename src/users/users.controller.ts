@@ -26,18 +26,20 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post()
-  create(@Body() createUserDto: CreateUserDto): User {
-    return this.usersService.create(createUserDto);
+  async create(@Body() createUserDto: CreateUserDto): Promise<User> {
+    return await this.usersService.create(createUserDto);
   }
 
   @Get()
-  findAll(): User[] {
-    return this.usersService.findAll();
+  async findAll(): Promise<User[]> {
+    return await this.usersService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id', new ParseUUIDPipe({ version: '4' })) id: UUID): User {
-    const user = this.usersService.findOne(id);
+  async findOne(
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: UUID,
+  ): Promise<User> {
+    const user = await this.usersService.findOne(id);
     if (!user) {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
@@ -46,11 +48,11 @@ export class UsersController {
   }
 
   @Put(':id')
-  update(
+  async update(
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: UUID,
     @Body() updateUserDto: UpdateUserDto,
   ) {
-    const res = this.usersService.update(id, updateUserDto);
+    const res = await this.usersService.update(id, updateUserDto);
 
     if (res.status !== StatusCodes.OK) {
       throw new HttpException(res.message, res.status);
@@ -61,8 +63,8 @@ export class UsersController {
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  remove(@Param('id', new ParseUUIDPipe({ version: '4' })) id: UUID) {
-    if (!this.usersService.remove(id)) {
+  async remove(@Param('id', new ParseUUIDPipe({ version: '4' })) id: UUID) {
+    if (!(await this.usersService.remove(id))) {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
   }
