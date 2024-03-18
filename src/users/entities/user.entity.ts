@@ -14,6 +14,10 @@ export class User {
   @Exclude()
   password: string;
 
+  constructor(partial: Partial<User>) {
+    Object.assign(this, partial);
+  }
+
   // constructor({ login, password }: { login: string; password: string }) {
   //   this.id = randomUUID();
   //   this.version = 1;

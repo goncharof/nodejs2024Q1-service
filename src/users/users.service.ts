@@ -5,21 +5,22 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 import { StatusCodes } from 'http-status-codes';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { plainToInstance } from 'class-transformer';
 
 @Injectable()
 export class UsersService {
   constructor(private prisma: PrismaService) {}
 
   async create(createUserDto: CreateUserDto): Promise<User> {
-    return await this.prisma.user.create({ data: createUserDto });
+    return new User(await this.prisma.user.create({ data: createUserDto }));
   }
 
   async findAll(): Promise<User[]> {
-    return this.prisma.user.findMany();
+    return plainToInstance(User, await this.prisma.user.findMany());
   }
 
   async findOne(id: UUID): Promise<User> {
-    return await this.prisma.user.findUnique({ where: { id } });
+    return new User(await this.prisma.user.findUnique({ where: { id } }));
   }
 
   async update(id: UUID, updateUserDto: UpdateUserDto) {
@@ -42,7 +43,7 @@ export class UsersService {
 
       return {
         status: StatusCodes.OK,
-        user: updatedUser,
+        user: new User(updatedUser),
       };
     }
     return {
