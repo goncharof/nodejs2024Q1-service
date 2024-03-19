@@ -1,7 +1,9 @@
-import { UUID } from 'node:crypto';
-
 export class Artist {
-  id: UUID;
+  id: string;
   name: string;
   grammy: boolean;
+
+  constructor(partial: Partial<Artist>) {
+    Object.assign(this, partial);
+  }
 }

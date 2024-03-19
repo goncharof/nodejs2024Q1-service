@@ -2,18 +2,49 @@ import { Injectable } from '@nestjs/common';
 // import { CreateFavoriteDto } from './dto/create-favorite.dto';
 // import { UpdateFavoriteDto } from './dto/update-favorite.dto';
 import { UUID } from 'node:crypto';
-import { DbService, RecordType } from 'src/db/db.service';
+import { AlbumsService } from 'src/albums/albums.service';
+import { ArtistsService } from 'src/artists/artists.service';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { TracksService } from 'src/tracks/tracks.service';
 
 @Injectable()
 export class FavoritesService {
-  constructor(private db: DbService) {}
+  constructor(
+    private prisma: PrismaService,
+    private artistsService: ArtistsService,
+    private albumsService: AlbumsService,
+    private tracksService: TracksService,
+  ) {}
 
-  addTrackToFavorites(trackId: UUID) {
-    if (this.db.getById(RecordType.TRACK, trackId)) {
-      this.db[RecordType.FAVORITE].tracks.push(trackId);
-      return true;
+  async addTrackToFavorites(trackId: UUID) {
+    const favorite = await this.prisma.favorite.findFirst({
+      where: { tracks: { some: { id: trackId } } },
+    });
+
+    if (!favorite) {
+      await this.prisma.favorite.create({
+        data: {
+          tracks: {
+            connect: { id: trackId },
+          },
+        },
+      });
+    } else {
+      await this.prisma.favorite.update({
+        where: { id: favorite.id },
+        data: {
+          tracks: {
+            connect: { id: trackId },
+          },
+        },
+      });
     }
-    return false;
+
+    // if (this.db.getById(RecordType.TRACK, trackId)) {
+    //   this.db[RecordType.FAVORITE].tracks.push(trackId);
+    //   return true;
+    // }
+    // return false;
   }
 
   addAlbumToFavorites(albumId: UUID) {

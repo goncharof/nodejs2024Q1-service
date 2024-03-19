@@ -2,67 +2,42 @@ import { Injectable } from '@nestjs/common';
 import { CreateArtistDto } from './dto/create-artist.dto';
 import { UpdateArtistDto } from './dto/update-artist.dto';
 import { Artist } from './entities/artist.entity';
-import { UUID, randomUUID } from 'crypto';
-import { DbService, RecordType } from 'src/db/db.service';
+import { UUID } from 'node:crypto';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class ArtistsService {
-  constructor(private db: DbService) {}
+  constructor(private prisma: PrismaService) {}
 
-  create(createArtistDto: CreateArtistDto) {
-    const artist: Artist = {
-      id: randomUUID(),
-      ...createArtistDto,
-    };
-    this.db[RecordType.ARTIST].push(artist);
-    return artist;
+  async create(createArtistDto: CreateArtistDto) {
+    return await this.prisma.artist.create({ data: createArtistDto });
   }
 
-  findAll() {
-    return this.db[RecordType.ARTIST];
+  async findAll(): Promise<Artist[]> {
+    return await this.prisma.artist.findMany();
   }
 
-  findOne(id: UUID) {
-    return this.db[RecordType.ARTIST].find((artist) => artist.id === id);
+  async findOne(id: UUID): Promise<Artist> {
+    return await this.prisma.artist.findUnique({ where: { id } });
   }
 
-  update(id: UUID, updateArtistDto: UpdateArtistDto) {
-    let artist = this.findOne(id);
-
-    if (artist) {
-      artist = { ...artist, ...updateArtistDto };
-      return artist;
+  async update(id: UUID, updateArtistDto: UpdateArtistDto): Promise<Artist> {
+    try {
+      await this.prisma.artist.update({
+        where: { id },
+        data: updateArtistDto,
+      });
+    } catch (error) {
+      return undefined;
     }
-
-    return undefined;
   }
 
-  remove(id: UUID) {
-    const index = this.db[RecordType.ARTIST].findIndex(
-      (artist) => artist.id === id,
-    );
-    if (index !== -1) {
-      this.db[RecordType.ARTIST].splice(index, 1);
-
-      this.db[RecordType.FAVORITE].artists = this.db[
-        RecordType.FAVORITE
-      ].artists.filter((artist) => artist !== id);
-
-      this.db[RecordType.ALBUM].forEach((album) => {
-        if (album.artistId === id) {
-          album.artistId = null;
-        }
-      });
-
-      this.db[RecordType.TRACK].forEach((album) => {
-        if (album.artistId === id) {
-          album.artistId = null;
-        }
-      });
-
+  async remove(id: UUID) {
+    try {
+      await this.prisma.artist.delete({ where: { id } });
       return true;
+    } catch (error) {
+      return false;
     }
-
-    return false;
   }
 }

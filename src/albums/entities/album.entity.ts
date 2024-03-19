@@ -1,8 +1,6 @@
-import { UUID } from 'node:crypto';
-
 export class Album {
-  id: UUID;
+  id: string;
   name: string;
   year: number;
-  artistId: UUID | null;
+  artistId: string | null;
 }

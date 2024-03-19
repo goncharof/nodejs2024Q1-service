@@ -2,54 +2,42 @@ import { Injectable } from '@nestjs/common';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
 import { Track } from './entities/track.entity';
-import { UUID, randomUUID } from 'crypto';
-import { DbService, RecordType } from 'src/db/db.service';
+import { UUID } from 'crypto';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class TracksService {
-  constructor(private db: DbService) {}
+  constructor(private prisma: PrismaService) {}
 
-  create(createTrackDto: CreateTrackDto) {
-    const track: Track = {
-      id: randomUUID(),
-      ...createTrackDto,
-    };
-    this.db[RecordType.TRACK].push(track);
-    return track;
+  async create(createTrackDto: CreateTrackDto): Promise<Track> {
+    return await this.prisma.track.create({ data: createTrackDto });
   }
 
-  findAll() {
-    return this.db[RecordType.TRACK];
+  async findAll(): Promise<Track[]> {
+    return await this.prisma.track.findMany();
   }
 
-  findOne(id: UUID) {
-    return this.db[RecordType.TRACK].find((track) => track.id === id);
+  async findOne(id: UUID): Promise<Track> {
+    return await this.prisma.track.findUnique({ where: { id } });
   }
 
   update(id: UUID, updateTrackDto: UpdateTrackDto) {
-    let track = this.findOne(id);
-    if (track) {
-      track = { ...track, ...updateTrackDto };
-      return track;
+    try {
+      return this.prisma.track.update({
+        where: { id },
+        data: updateTrackDto,
+      });
+    } catch (error) {
+      return undefined;
     }
-
-    return undefined;
   }
 
   remove(id: UUID) {
-    const index = this.db[RecordType.TRACK].findIndex(
-      (track) => track.id === id,
-    );
-    if (index !== -1) {
-      this.db[RecordType.TRACK].splice(index, 1);
-
-      this.db[RecordType.FAVORITE].tracks = this.db[
-        RecordType.FAVORITE
-      ].tracks.filter((track) => track !== id);
-
+    try {
+      this.prisma.track.delete({ where: { id } });
       return true;
+    } catch (error) {
+      return false;
     }
-
-    return false;
   }
 }
