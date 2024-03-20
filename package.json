@@ -2,9 +2,12 @@
   "name": "home-library",
   "version": "0.0.1",
   "description": "",
-  "author": "",
+  "author": "Goncharof",
   "private": true,
   "license": "UNLICENSED",
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
+  },
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "nest build",
