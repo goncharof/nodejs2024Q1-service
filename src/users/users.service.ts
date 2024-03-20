@@ -20,11 +20,15 @@ export class UsersService {
   }
 
   async findOne(id: UUID): Promise<User> {
-    return new User(await this.prisma.user.findUnique({ where: { id } }));
+    return plainToInstance(
+      User,
+      await this.prisma.user.findUnique({ where: { id } }),
+    );
   }
 
   async update(id: UUID, updateUserDto: UpdateUserDto) {
-    const user = await this.findOne(id);
+    const user = await this.prisma.user.findUnique({ where: { id } });
+
     if (user) {
       if (updateUserDto.oldPassword !== user.password) {
         return {

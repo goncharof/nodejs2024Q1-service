@@ -40,6 +40,7 @@ export class UsersController {
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: UUID,
   ): Promise<User> {
     const user = await this.usersService.findOne(id);
+
     if (!user) {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
