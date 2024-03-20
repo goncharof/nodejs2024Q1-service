@@ -16,78 +16,72 @@ export class FavoritesService {
     private tracksService: TracksService,
   ) {}
 
-  async addTrackToFavorites(trackId: UUID) {
-    const favorite = await this.prisma.favorite.findFirst({
-      where: { tracks: { some: { id: trackId } } },
-    });
+  favmodel = this.prisma.favorite.findFirst();
 
-    if (!favorite) {
-      await this.prisma.favorite.create({
-        data: {
-          tracks: {
-            connect: { id: trackId },
-          },
-        },
-      });
-    } else {
+  async addToFavorite(type: 'albums' | 'artists' | 'tracks', id: UUID) {
+    try {
       await this.prisma.favorite.update({
-        where: { id: favorite.id },
+        where: { id: (await this.favmodel).id },
         data: {
-          tracks: {
-            connect: { id: trackId },
+          [type]: {
+            connect: { id },
           },
         },
       });
-    }
 
-    // if (this.db.getById(RecordType.TRACK, trackId)) {
-    //   this.db[RecordType.FAVORITE].tracks.push(trackId);
-    //   return true;
-    // }
-    // return false;
+      return true;
+    } catch {
+      return false;
+    }
   }
 
-  addAlbumToFavorites(albumId: UUID) {
-    if (this.db.getById(RecordType.ALBUM, albumId)) {
-      this.db[RecordType.FAVORITE].albums.push(albumId);
+  async removeFromFavorite(type: 'albums' | 'artists' | 'tracks', id: UUID) {
+    try {
+      await this.prisma.favorite.update({
+        where: { id: (await this.favmodel).id },
+        data: {
+          [type]: {
+            disconnect: { id },
+          },
+        },
+      });
       return true;
+    } catch {
+      return false;
     }
-    return false;
+  }
+
+  async addTrackToFavorites(id: UUID) {
+    return await this.addToFavorite('tracks', id);
+  }
+
+  async addAlbumToFavorites(albumId: UUID) {
+    return await this.addToFavorite('albums', albumId);
   }
 
   addArtistToFavorites(artistId: UUID) {
-    if (this.db.getById(RecordType.ARTIST, artistId)) {
-      this.db[RecordType.FAVORITE].artists.push(artistId);
-      return true;
-    }
-    return false;
+    return this.addToFavorite('artists', artistId);
   }
 
-  removeTrackFromFavorites(trackId: UUID) {
-    this.db[RecordType.FAVORITE].tracks = this.db[
-      RecordType.FAVORITE
-    ].tracks.filter((track) => track !== trackId);
+  async removeTrackFromFavorites(trackId: UUID) {
+    await this.removeFromFavorite('tracks', trackId);
   }
 
-  removeAlbumFromFavorites(albumId: UUID) {
-    this.db[RecordType.FAVORITE].albums = this.db[
-      RecordType.FAVORITE
-    ].albums.filter((album) => album !== albumId);
+  async removeAlbumFromFavorites(albumId: UUID) {
+    await this.removeFromFavorite('albums', albumId);
   }
 
-  removeArtistFromFavorites(artistId: UUID) {
-    this.db[RecordType.FAVORITE].artists = this.db[
-      RecordType.FAVORITE
-    ].artists.filter((artist) => artist !== artistId);
+  async removeArtistFromFavorites(artistId: UUID) {
+    await this.removeFromFavorite('artists', artistId);
   }
 
-  findAll() {
-    const { artists, albums, tracks } = this.db[RecordType.FAVORITE];
-
-    return {
-      artists: artists.map((id) => this.db.getById(RecordType.ARTIST, id)),
-      albums: albums.map((id) => this.db.getById(RecordType.ALBUM, id)),
-      tracks: tracks.map((id) => this.db.getById(RecordType.TRACK, id)),
-    };
+  async findAll() {
+    return this.prisma.favorite.findMany({
+      include: {
+        artists: true,
+        albums: true,
+        tracks: true,
+      },
+    });
   }
 }
