@@ -76,12 +76,20 @@ export class FavoritesService {
   }
 
   async findAll() {
-    return this.prisma.favorite.findMany({
+    return await this.prisma.favorite.findFirst({
       include: {
         artists: true,
         albums: true,
         tracks: true,
       },
     });
+
+    // const response = {
+    // artists: favorite.artists.map((favArtist) => favArtist.artist),
+    // albums: firstFavorite.albums.map((favAlbum) => favAlbum.album),
+    // tracks: firstFavorite.tracks.map((favTrack) => favTrack.track),
+    // };
+
+    // return response;
   }
 }
