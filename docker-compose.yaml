@@ -2,10 +2,9 @@ version: '3.8'
 services:
   app:
     container_name: nodejs2024Q1-service
-    # restart: always
-    # environment:
-      # - PORT=${PORT}
-      # - DATABASE_URL=12312312312312312
+    restart: always
+    environment:
+    - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/postgres
     build:
       context: .
       dockerfile: docker/Dockerfile.service
@@ -17,11 +16,13 @@ services:
     ports:
       - "${PORT}:${PORT}"
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     networks:
       - app-network  
 
   postgres:
+    container_name: postgres
     restart: always
     environment:
       - POSTGRES_USER=${POSTGRES_USER}
@@ -33,6 +34,13 @@ services:
         DBPORT: ${POSTGRES_PORT}
     volumes:
       - postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5  
+    ports:
+      - "${POSTGRES_PORT}:${POSTGRES_PORT}"
     networks:
       - app-network  
 
