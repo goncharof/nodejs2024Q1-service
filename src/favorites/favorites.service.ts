@@ -1,20 +1,12 @@
 import { Injectable } from '@nestjs/common';
-// import { CreateFavoriteDto } from './dto/create-favorite.dto';
-// import { UpdateFavoriteDto } from './dto/update-favorite.dto';
+import { plainToInstance } from 'class-transformer';
 import { UUID } from 'node:crypto';
-import { AlbumsService } from 'src/albums/albums.service';
-import { ArtistsService } from 'src/artists/artists.service';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { TracksService } from 'src/tracks/tracks.service';
+import { Favorite } from './entities/favorite.entity';
 
 @Injectable()
 export class FavoritesService {
-  constructor(
-    private prisma: PrismaService,
-    private artistsService: ArtistsService,
-    private albumsService: AlbumsService,
-    private tracksService: TracksService,
-  ) {}
+  constructor(private prisma: PrismaService) {}
 
   favmodel = this.prisma.favorite.findFirst();
 
@@ -59,8 +51,8 @@ export class FavoritesService {
     return await this.addToFavorite('albums', albumId);
   }
 
-  addArtistToFavorites(artistId: UUID) {
-    return this.addToFavorite('artists', artistId);
+  async addArtistToFavorites(artistId: UUID) {
+    return await this.addToFavorite('artists', artistId);
   }
 
   async removeTrackFromFavorites(trackId: UUID) {
@@ -76,20 +68,15 @@ export class FavoritesService {
   }
 
   async findAll() {
-    return await this.prisma.favorite.findFirst({
-      include: {
-        artists: true,
-        albums: true,
-        tracks: true,
-      },
-    });
-
-    // const response = {
-    // artists: favorite.artists.map((favArtist) => favArtist.artist),
-    // albums: firstFavorite.albums.map((favAlbum) => favAlbum.album),
-    // tracks: firstFavorite.tracks.map((favTrack) => favTrack.track),
-    // };
-
-    // return response;
+    return plainToInstance(
+      Favorite,
+      await this.prisma.favorite.findFirst({
+        include: {
+          artists: true,
+          albums: true,
+          tracks: true,
+        },
+      }),
+    );
   }
 }

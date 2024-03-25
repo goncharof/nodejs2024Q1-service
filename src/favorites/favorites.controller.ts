@@ -12,11 +12,6 @@ import {
 import { FavoritesService } from './favorites.service';
 import { UUID } from 'crypto';
 
-// class FindOneParams {
-//   @IsUUID('4')
-//   id: UUID;
-// }
-
 @Controller('favs')
 export class FavoritesController {
   constructor(private readonly favoritesService: FavoritesService) {}
@@ -25,7 +20,7 @@ export class FavoritesController {
   async addTrackToFavorites(
     @Param('id', new ParseUUIDPipe({ version: '4' })) trackId: UUID,
   ) {
-    if (!this.favoritesService.addTrackToFavorites(trackId)) {
+    if (!(await this.favoritesService.addTrackToFavorites(trackId))) {
       throw new HttpException(
         'Track not found',
         HttpStatus.UNPROCESSABLE_ENTITY,
@@ -37,7 +32,7 @@ export class FavoritesController {
   async addAlbumToFavorites(
     @Param('id', new ParseUUIDPipe({ version: '4' })) albumId: UUID,
   ) {
-    if (!this.favoritesService.addAlbumToFavorites(albumId)) {
+    if (!(await this.favoritesService.addAlbumToFavorites(albumId))) {
       throw new HttpException(
         'Album not found',
         HttpStatus.UNPROCESSABLE_ENTITY,
@@ -49,7 +44,7 @@ export class FavoritesController {
   async addArtistToFavorites(
     @Param('id', new ParseUUIDPipe({ version: '4' })) artistId: UUID,
   ) {
-    if (!this.favoritesService.addArtistToFavorites(artistId)) {
+    if (!(await this.favoritesService.addArtistToFavorites(artistId))) {
       throw new HttpException(
         'Artist not found',
         HttpStatus.UNPROCESSABLE_ENTITY,
@@ -59,7 +54,7 @@ export class FavoritesController {
 
   @Get()
   async getAllFavorites() {
-    return this.favoritesService.findAll();
+    return await this.favoritesService.findAll();
   }
 
   @Delete('track/:id')
@@ -67,7 +62,7 @@ export class FavoritesController {
   async removeTrackFromFavorites(
     @Param('id', new ParseUUIDPipe({ version: '4' })) trackId: UUID,
   ) {
-    return this.favoritesService.removeTrackFromFavorites(trackId);
+    return await this.favoritesService.removeTrackFromFavorites(trackId);
   }
 
   @Delete('album/:id')
@@ -75,7 +70,7 @@ export class FavoritesController {
   async removeAlbumFromFavorites(
     @Param('id', new ParseUUIDPipe({ version: '4' })) albumId: UUID,
   ) {
-    return this.favoritesService.removeAlbumFromFavorites(albumId);
+    return await this.favoritesService.removeAlbumFromFavorites(albumId);
   }
 
   @Delete('artist/:id')
@@ -83,6 +78,6 @@ export class FavoritesController {
   async removeArtistFromFavorites(
     @Param('id', new ParseUUIDPipe({ version: '4' })) artistId: UUID,
   ) {
-    return this.favoritesService.removeArtistFromFavorites(artistId);
+    return await this.favoritesService.removeArtistFromFavorites(artistId);
   }
 }
