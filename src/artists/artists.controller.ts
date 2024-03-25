@@ -3,7 +3,6 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
   Delete,
   HttpCode,
@@ -27,13 +26,13 @@ export class ArtistsController {
   }
 
   @Get()
-  findAll() {
-    return this.artistsService.findAll();
+  async findAll() {
+    return await this.artistsService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id', new ParseUUIDPipe({ version: '4' })) id: UUID) {
-    const artist = this.artistsService.findOne(id);
+  async findOne(@Param('id', new ParseUUIDPipe({ version: '4' })) id: UUID) {
+    const artist = await this.artistsService.findOne(id);
     if (!artist) {
       throw new HttpException('Artist not found', HttpStatus.NOT_FOUND);
     }
@@ -41,12 +40,12 @@ export class ArtistsController {
   }
 
   @Put(':id')
-  @Patch(':id')
-  update(
+  async update(
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: UUID,
     @Body() updateArtistDto: UpdateArtistDto,
   ) {
-    const artist = this.artistsService.update(id, updateArtistDto);
+    const artist = await this.artistsService.update(id, updateArtistDto);
+
     if (!artist) {
       throw new HttpException('Artist not found', HttpStatus.NOT_FOUND);
     }
@@ -56,8 +55,8 @@ export class ArtistsController {
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  remove(@Param('id', new ParseUUIDPipe({ version: '4' })) id: UUID) {
-    if (!this.artistsService.remove(id)) {
+  async remove(@Param('id', new ParseUUIDPipe({ version: '4' })) id: UUID) {
+    if (!(await this.artistsService.remove(id))) {
       throw new HttpException('Artist not found', HttpStatus.NOT_FOUND);
     }
   }

@@ -23,16 +23,20 @@ export class ArtistsService {
 
   async update(id: UUID, updateArtistDto: UpdateArtistDto): Promise<Artist> {
     try {
-      await this.prisma.artist.update({
+      return await this.prisma.artist.update({
         where: { id },
         data: updateArtistDto,
       });
     } catch (error) {
+      console.log(error);
+
       return undefined;
     }
   }
 
   async remove(id: UUID) {
+    console.log('removing', id);
+
     try {
       await this.prisma.artist.delete({ where: { id } });
       return true;
