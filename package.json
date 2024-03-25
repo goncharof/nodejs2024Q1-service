@@ -23,9 +23,9 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "scan": "docker scout cves nodejs2024q1-service-app",
+    "scan": "docker scout cves ivanivanivanivan/nodejs2024q1-service:latest",
     "scan:snyk": "npx snyk auth && npx snyk test",
-    "scan:snyk:container": "npx snyk auth && npx snyk container test nodejs2024q1-service-app --file=./docker/Dockerfile.service",
+    "scan:snyk:container": "npx snyk auth && npx snyk container test ivanivanivanivan/nodejs2024q1-service:latest --file=./docker/Dockerfile.service",
     "audit": "npm audit"
   },
   "dependencies": {

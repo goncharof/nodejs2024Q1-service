@@ -2,6 +2,7 @@ version: '3.8'
 services:
   app:
     container_name: nodejs2024Q1-service
+    image: ivanivanivanivan/nodejs2024q1-service:latest
     restart: always
     environment:
     - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/postgres
@@ -23,6 +24,7 @@ services:
 
   postgres:
     container_name: postgres
+    image: ivanivanivanivan/nodejs2024q1-db:latest
     restart: always
     environment:
       - POSTGRES_USER=${POSTGRES_USER}
