@@ -21,9 +21,9 @@ export class TracksService {
     return await this.prisma.track.findUnique({ where: { id } });
   }
 
-  update(id: UUID, updateTrackDto: UpdateTrackDto) {
+  async update(id: UUID, updateTrackDto: UpdateTrackDto) {
     try {
-      return this.prisma.track.update({
+      return await this.prisma.track.update({
         where: { id },
         data: updateTrackDto,
       });
@@ -32,9 +32,9 @@ export class TracksService {
     }
   }
 
-  remove(id: UUID) {
+  async remove(id: UUID) {
     try {
-      this.prisma.track.delete({ where: { id } });
+      await this.prisma.track.delete({ where: { id } });
       return true;
     } catch (error) {
       return false;
