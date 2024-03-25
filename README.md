@@ -24,11 +24,11 @@ npm install
 Create .env file (based on .env.example): ./.env
 ```
 
+## Running application
+
 ```
 run Docker Desktop on your machine
 ```
-
-## Running application
 
 ```
 docker compose up -d --build
