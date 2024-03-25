@@ -28,8 +28,6 @@ export class ArtistsService {
         data: updateArtistDto,
       });
     } catch (error) {
-      console.log(error);
-
       return undefined;
     }
   }
