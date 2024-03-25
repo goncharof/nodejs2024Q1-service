@@ -1,0 +1,54 @@
+version: '3.8'
+services:
+  app:
+    container_name: nodejs2024Q1-service
+    image: ivanivanivanivan/nodejs2024q1-service:latest
+    restart: always
+    environment:
+    - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/postgres
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.service
+      args:
+        PORT: ${PORT}
+        DATABASE_URL: ${DATABASE_URL}
+    volumes:
+      - ./src:/app/src
+    ports:
+      - "${PORT}:${PORT}"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - app-network  
+
+  postgres:
+    container_name: postgres
+    image: ivanivanivanivan/nodejs2024q1-db:latest
+    restart: always
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.postgres
+      args:
+        DBPORT: ${POSTGRES_PORT}
+    volumes:
+      - postgres:/var/lib/postgresql/data
+      - postgres_logs:/var/log/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5  
+    networks:
+      - app-network  
+
+volumes:
+  postgres:
+  postgres_logs:
+
+networks:
+  app-network:
+    driver: bridge

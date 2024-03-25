@@ -1,0 +1,6 @@
+FROM postgres:latest
+
+ARG DBPORT
+EXPOSE ${DBPORT}
+
+CMD ["postgres"]
