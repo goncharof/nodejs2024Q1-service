@@ -31,8 +31,9 @@ export class AlbumsController {
   }
 
   @Get(':id')
-  findOne(@Param('id', new ParseUUIDPipe({ version: '4' })) id: UUID) {
-    const album = this.albumsService.findOne(id);
+  async findOne(@Param('id', new ParseUUIDPipe({ version: '4' })) id: UUID) {
+    const album = await this.albumsService.findOne(id);
+
     if (!album) {
       throw new HttpException('Album not found', HttpStatus.NOT_FOUND);
     }
@@ -40,11 +41,11 @@ export class AlbumsController {
   }
 
   @Put(':id')
-  update(
+  async update(
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: UUID,
     @Body() updateAlbumDto: UpdateAlbumDto,
   ) {
-    const album = this.albumsService.update(id, updateAlbumDto);
+    const album = await this.albumsService.update(id, updateAlbumDto);
     if (!album) {
       throw new HttpException('Album not found', HttpStatus.NOT_FOUND);
     }
@@ -54,8 +55,8 @@ export class AlbumsController {
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  remove(@Param('id', new ParseUUIDPipe({ version: '4' })) id: UUID) {
-    if (!this.albumsService.remove(id)) {
+  async remove(@Param('id', new ParseUUIDPipe({ version: '4' })) id: UUID) {
+    if (!(await this.albumsService.remove(id))) {
       throw new HttpException('Album not found', HttpStatus.NOT_FOUND);
     }
   }
