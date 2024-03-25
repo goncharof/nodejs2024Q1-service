@@ -34,18 +34,18 @@ services:
         DBPORT: ${POSTGRES_PORT}
     volumes:
       - postgres:/var/lib/postgresql/data
+      - postgres_logs:/var/log/postgresql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
       interval: 10s
       timeout: 5s
       retries: 5  
-    ports:
-      - "${POSTGRES_PORT}:${POSTGRES_PORT}"
     networks:
       - app-network  
 
 volumes:
   postgres:
+  postgres_logs:
 
 networks:
   app-network:
