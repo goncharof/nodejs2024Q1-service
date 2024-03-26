@@ -11,4 +11,4 @@ RUN npm install
 
 COPY . .
 
-CMD source start:watch.sh
+CMD source start-watch.sh
